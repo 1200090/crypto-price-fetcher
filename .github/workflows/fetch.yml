@@ -1,0 +1,35 @@
+name: دریافت خودکار قیمت
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'   # هر 10 دقیقه یکبار
+  workflow_dispatch:          # برای اجرای دستی
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: دریافت کدها
+        uses: actions/checkout@v4
+      
+      - name: نصب پایتون
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      
+      - name: نصب کتابخانه‌ها
+        run: pip install -r requirements.txt
+      
+      - name: اجرای اسکریپت
+        run: python fetch_advanced.py
+      
+      - name: ذخیره خروجی
+        uses: actions/upload-artifact@v4
+        with:
+          name: crypto-data
+          path: |
+            *.csv
+            summary.json
+          retention-days: 7
+          overwrite: true
